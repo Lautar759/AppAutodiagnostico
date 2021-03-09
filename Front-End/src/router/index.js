@@ -29,24 +29,24 @@ const router = new Router({
     {
       path: '/home',
       name: 'Home',
-      component: About
+      component: Home
     },
     {
       path: '/password',
       name: 'Password',
-      component: Home
+      component: Password
     },
     {
 
       path: '/about',
       name: 'about',
-      component: Password
+      component: About
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register', '/home'];
+  const publicPages = ['/login', '/register', '/home','/password'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
 
