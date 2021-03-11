@@ -1,53 +1,58 @@
 <template>
     <div class="Home">
+        <navbar />
         <div class="wrapper fadeInDown">
             <div id="formContent">
-                <br /><br /><br />
+                <br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP --><br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP --><br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP -->
                 <form>
                     <input
                         type="text"
-                        id="register"
+                        id="name-input"
                         class="fadeIn second"
-                        name="register"
+                        name="name-input"
                         placeholder="Nombre y Apellido"
+                        v-model="user.username"
                     />
                     <input
                         type="text"
-                        id="register"
+                        id="email-input"
                         class="fadeIn second"
-                        name="register"
+                        name="email-input"
                         placeholder="Correo Electrónico"
+                        v-model="user.email"
                     />
                     <input
                         type="password"
-                        id="password"
+                        id="password-input"
                         class="fadeIn third"
-                        name="password"
+                        name="password-input"
                         placeholder="Contraseña"
+                        v-model="user.password"
                     />
                     <input
                         type="password"
-                        id="repassword"
+                        id="repassword-input"
                         class="fadeIn third"
-                        name="repassword"
+                        name="repassword-input"
                         placeholder="Confirmar contraseña"
-                    /><br />
-                    <br />
+                    />
+                    <br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP -->
+                    <br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP -->
                     Sexo:
-                    <select>
+                    <select v-model="user.sex">
                         <option>Hombre</option>
                         <option>Mujer</option>
-                        <option>Otro</option></select
-                    ><br />
-                    Fec. Nacimiento <input type="date" id="date" /><br />
-                    <router-link to="/diagnostico">
-                        <input
-                            type="submit"
-                            class="fadeIn fourth"
-                            value="Register"
-                            v-on:click="signUp"
-                        />
-                    </router-link>
+                        <option>Otro</option>
+                    </select>
+                    <br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP -->
+                    Fec. Nacimiento <input type="date" id="date" />
+                    <br /> <!-- EVITAR EL USO DE BR, USAR BOOTSTRAP -->
+                    <button
+                        class="btn btn-secondary fadeIn fourth"
+                        @click.prevent="register"
+                    >
+                        Register
+                    </button>
                 </form>
             </div>
         </div>
@@ -55,295 +60,59 @@
 </template>
 
 <script>
+import styles from "@/css/Register.css";
+import navbar from "@/components/Nav-no-login";
+import User from "@/models/user";
+
 export default {
     name: "register",
-
+    components: { navbar },
+    data() {
+        return {
+            user: new User("", "", ""),
+            submitted: false,
+            successful: false,
+            message: "",
+        };
+    },
+    computed: {
+        loggedIn() {
+            return this.$store.state.auth.status.loggedIn;
+        },
+    },
+    mounted: function () {
+        if (this.loggedIn) {
+            this.$router.push("/diagnostico");
+        } /*
+        this.register({
+            email: "asdf@gmail.com",
+            name: "asdf",
+            password: "123456",
+        });*/
+    },
     methods: {
-        signUp: function () {
-            //  Codigo para logearse
+        register() {
+            this.message = "";
+            this.submitted = true;
+            //this.$validator.validate().then((isValid) => {
+            //if (isValid) {
+            this.$store.dispatch("auth/register", this.user).then(
+                (data) => {
+                    this.message = data.message;
+                    this.successful = true;
+                    this.$router.push("/login");
+                },
+                (error) => {
+                    this.message =
+                        (error.response && error.response.data) ||
+                        error.message ||
+                        error.toString();
+                    this.successful = false;
+                }
+            );
+            //}
+            //});
         },
     },
 };
 </script>
-
-<style scoped>
-html {
-    background-color: #222;
-}
-
-body {
-    font-family: "Poppins", sans-serif;
-    height: 100vh;
-}
-
-a {
-    color: #222;
-    display: inline-block;
-    text-decoration: none;
-    font-weight: 400;
-}
-
-h2 {
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    display: inline-block;
-    margin: 40px 8px 10px 8px;
-    color: #cccccc;
-}
-
-/* STRUCTURE */
-
-.wrapper {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    min-height: 100%;
-    padding: 20px;
-}
-
-#formContent {
-    -webkit-border-radius: 10px 10px 10px 10px;
-    border-radius: 10px 10px 10px 10px;
-    background: #fff;
-    padding: 30px;
-    width: 90%;
-    max-width: 450px;
-    position: relative;
-    padding: 0px;
-    -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-    box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-    text-align: center;
-}
-
-#formFooter {
-    background-color: #f6f6f6;
-    border-top: 1px solid #dce8f1;
-    padding: 25px;
-    text-align: center;
-    -webkit-border-radius: 0 0 10px 10px;
-    border-radius: 0 0 10px 10px;
-}
-
-/* TABS */
-
-h2.inactive {
-    color: #cccccc;
-}
-
-h2.active {
-    color: #0d0d0d;
-    border-bottom: 2px solid #222;
-}
-
-/* FORM TYPOGRAPHY*/
-
-input[type="button"],
-input[type="submit"],
-input[type="reset"] {
-    background-color: #222;
-    border: none;
-    color: white;
-    padding: 15px 80px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    font-size: 13px;
-    -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-    box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    margin: 5px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-}
-
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover {
-    background-color: #222;
-}
-
-input[type="button"]:active,
-input[type="submit"]:active,
-input[type="reset"]:active {
-    -moz-transform: scale(0.95);
-    -webkit-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    -ms-transform: scale(0.95);
-    transform: scale(0.95);
-}
-
-input[type="password"] {
-    background-color: #f6f6f6;
-    border: none;
-    color: #0d0d0d;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 5px;
-    width: 85%;
-    border: 2px solid #f6f6f6;
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-}
-
-input[type="password"]:focus {
-    background-color: #fff;
-    border-bottom: 2px solid #222;
-}
-
-input[type="password"]:placeholder {
-    color: #cccccc;
-}
-
-input[type="text"] {
-    background-color: #f6f6f6;
-    border: none;
-    color: #0d0d0d;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 5px;
-    width: 85%;
-    border: 2px solid #f6f6f6;
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-}
-
-input[type="text"]:focus {
-    background-color: #fff;
-    border-bottom: 2px solid #222;
-}
-
-input[type="text"]:placeholder {
-    color: #cccccc;
-}
-
-/* ANIMATIONS */
-
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-    -webkit-animation-name: fadeInDown;
-    animation-name: fadeInDown;
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-}
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-@-moz-keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.fadeIn {
-    opacity: 0;
-    -webkit-animation: fadeIn ease-in 1;
-    -moz-animation: fadeIn ease-in 1;
-    animation: fadeIn ease-in 1;
-
-    -webkit-animation-fill-mode: forwards;
-    -moz-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
-
-    -webkit-animation-duration: 1s;
-    -moz-animation-duration: 1s;
-    animation-duration: 1s;
-}
-
-.fadeIn.first {
-    -webkit-animation-delay: 0.4s;
-    -moz-animation-delay: 0.4s;
-    animation-delay: 0.4s;
-}
-
-.fadeIn.second {
-    -webkit-animation-delay: 0.6s;
-    -moz-animation-delay: 0.6s;
-    animation-delay: 0.6s;
-}
-
-.fadeIn.third {
-    -webkit-animation-delay: 0.8s;
-    -moz-animation-delay: 0.8s;
-    animation-delay: 0.8s;
-}
-
-.fadeIn.fourth {
-    -webkit-animation-delay: 1s;
-    -moz-animation-delay: 1s;
-    animation-delay: 1s;
-}
-
-/* Simple CSS3 Fade-in Animation */
-.underlineHover:after {
-    display: block;
-    left: 0;
-    bottom: -10px;
-    width: 0;
-    height: 2px;
-    background-color: #222;
-    content: "";
-    transition: width 0.2s;
-}
-
-.underlineHover:hover {
-    color: #222;
-}
-
-.underlineHover:hover:after {
-    width: 100%;
-}
-
-/* OTHERS */
-
-*:focus {
-    outline: none;
-}
-#icon {
-    width: 60%;
-}
-</style>

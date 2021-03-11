@@ -1,18 +1,17 @@
 import axios from 'axios';
-import config from '../resources/config.js';
+import config from '@/resources/config';
 
 class AuthService {
   login(user) {
     return axios
-      .post(config.JWT_URL + 'signin', {
-        username: user.email,
+      .post(config.JWT_URL + 'login', {
+        email: user.email,
         password: user.password
       })
       .then(response => {
-        if (response.data.accessToken) {
+        if (response.data.access_token) {
           localStorage.setItem('user', JSON.stringify(response.data));
         }
-
         return response.data;
       });
   }
@@ -22,12 +21,12 @@ class AuthService {
   }
 
   register(user) {
-    return axios.post(API_URL + 'signup', {
-      username: user.username,
-      emailus: user.email,
+    return axios.post(config.JWT_URL + 'register', {
+      name: user.username,
+      email: user.email,
       password: user.password
     });
   }
 }
 
-export default new AuthService(); 
+export default new AuthService();
