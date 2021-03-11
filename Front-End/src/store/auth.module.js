@@ -1,4 +1,4 @@
-import AuthService from '../services/auth.service';
+import AuthService from '@/services/auth.service';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const initialState = user
@@ -20,6 +20,10 @@ export const auth = {
           return Promise.reject(error);
         }
       );
+    },
+    logout({ commit }) {
+      AuthService.logout();
+      commit('logout');
     },
     register({ commit }, user) {
       return AuthService.register(user).then(
@@ -43,12 +47,15 @@ export const auth = {
       state.status.loggedIn = false;
       state.user = null;
     },
+    logout(state) {
+      state.status.loggedIn = false;
+      state.user = null;
+    },
     registerSuccess(state) {
-      state.status.loggedIn = true;
-      state.user = user;
+      state.status.loggedIn = false;
     },
     registerFailure(state) {
       state.status.loggedIn = false;
     }
   }
-}
+};

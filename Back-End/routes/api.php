@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\PersonaController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,44 +13,39 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::group([
+//  RUTAS PÚBLICAS
 
-    'middleware' => 'api',
-    'prefix' => 'auth',
 
-], 
+//  RUTAS PARA AUTNTICACION
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'auth',
+    ],
     function ($router) {
-    Route::get('login', 'AuthController@login');
-    Route::get('logout', 'AuthController@logout');
-    Route::get('refresh', 'AuthController@refresh');
-    Route::get('me', 'AuthController@me');
+        Route::post('login', 'AuthController@login');
+        Route::post('register', 'AuthController@register');
+        Route::post('logout', 'AuthController@logout');
+        Route::post('refresh', 'AuthController@refresh');
+        Route::post('user', 'AuthController@me');
+    }
+);
 
-    // http://localhost:8000/api/auth/register?name=Horacio&email=horaciomateos@gmail.com&password=123456
-    // Route::post('login', 'AuthController@login');
-    // Route::post('logout', 'AuthController@logout');
-    // Route::post('refresh', 'AuthController@refresh');
-    // Route::post('me', 'AuthController@me');
+//  RUTAS QUE REQUIEREN AUTENTICACION
+Route::group(['middleware' => 'auth:api'], function () {
 
-});
+    Route::get('usuario/{id}', 'PersonaController@mostrarDatosPersonas');
+    Route::get('usuario/{id}/sintomas', 'PersonaController@mostrarSintomasPersonas');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    Route::post('probame', 'PersonaController@anda');
+    Route::post('apellido', 'PersonaController@apellido');
+    Route::post('sintomas', 'PersonaController@sintomas');
+    Route::post('datos', 'PersonaController@datos');
+    Route::post('/mostrar/{id}', 'PersonaController@mostrarDatosPersonas');
 
-Route::get('todo', 'PersonaController@index');
-
-Route::get('probame', 'PersonaController@anda');
-Route::get('apellido', 'PersonaController@apellido');
-Route::get('sintomas', 'PersonaController@sintomas');
-Route::get('datos', 'PersonaController@datos');
-Route::get('/mostrar/{id}', 'PersonaController@mostrarDatosPersonas');
-
-
-
-
-// Esto esta relacionado con los TEST
-Route::get('datos/{name}', function ($name) {
-
-    echo "Nombre: ", $name;
-
+    // Esto esta relacionado con los TEST
+    Route::get('datos/{name}', function ($name) {
+        // TODO: resolver con un controller, no deberian haber funciones en la api
+        echo "Nombre: ", $name;
+    });
 });
